@@ -1,6 +1,7 @@
 import Foundation
 import WebKit
 import os
+import ThreeDSSDK
 
 
 /// Delegate to receive authorizing payment events.
@@ -20,6 +21,13 @@ public protocol AuthorizingPaymentViewControllerDelegate: AnyObject {
     @available(*, unavailable,
     renamed: "authorizingPaymentViewControllerDidCancel(_:)")
     func omiseAuthorizingPaymentViewControllerDidCancel(_ viewController: AuthorizingPaymentViewController)
+    
+    /// New delegate protocol
+    func authorizingPaymentViewControllerDidCompleted(_ viewController: AuthorizingPaymentViewController)
+    
+    func authorizingPaymentViewControllerDidTimedout(_ viewController: AuthorizingPaymentViewController)
+    
+    func authorizingPaymentViewControllerDidError(_ viewController: AuthorizingPaymentViewController, error: Error)
 }
 
 
@@ -202,6 +210,31 @@ extension AuthorizingPaymentViewController: WKNavigationDelegate {
             }
             decisionHandler(.allow)
         }
+    }
+}
+
+// MARK: For testing with new 3DS-V2
+extension AuthorizingPaymentViewController {
+    public static func makeAuthorizingPayment(_ currentViewController: UIViewController,
+                                              authorizedURL: URL,
+                                              expectedReturnURLPatterns: [URLComponents],
+                                              delegate: AuthorizingPaymentViewControllerDelegate) {
+
+        let storyboard = UIStoryboard(name: "OmiseSDK", bundle: Bundle(for: AuthorizingPaymentViewController.self))
+        let authViewController = storyboard.instantiateViewController(withIdentifier: "DefaultAuthorizingPaymentViewController") as! AuthorizingPaymentViewController
+        authViewController.authorizedURL = authorizedURL
+        authViewController.expectedReturnURLPatterns = expectedReturnURLPatterns
+        authViewController.delegate = delegate
+        
+        ThreeDSService.doAuthorizePayment(authorizedURL, handlePaymentVerionOne: {
+            currentViewController.present(authViewController, animated: true, completion: nil)
+        }, success: {
+            delegate.authorizingPaymentViewControllerDidCompleted(authViewController)
+        }, failure: { error in
+            delegate.authorizingPaymentViewControllerDidError(authViewController, error: error)
+        }, timedout: {
+            delegate.authorizingPaymentViewControllerDidTimedout(authViewController)
+        })
     }
 }
 
