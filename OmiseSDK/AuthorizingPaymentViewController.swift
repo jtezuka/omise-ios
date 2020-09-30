@@ -21,15 +21,15 @@ public protocol AuthorizingPaymentViewControllerDelegate: AnyObject {
     @available(*, unavailable,
     renamed: "authorizingPaymentViewControllerDidCancel(_:)")
     func omiseAuthorizingPaymentViewControllerDidCancel(_ viewController: AuthorizingPaymentViewController)
-    
-    /// New delegate protocol
-    func authorizingPaymentViewControllerDidCompleted(_ viewController: AuthorizingPaymentViewController)
-    
-    func authorizingPaymentViewControllerDidTimedout(_ viewController: AuthorizingPaymentViewController)
-    
-    func authorizingPaymentViewControllerDidError(_ viewController: AuthorizingPaymentViewController, error: Error)
 }
 
+public protocol AuthorizingPaymentDelegate: AnyObject {
+    func didCompleted(transactionID: String, transactionStatus: String)
+    func didCancelled()
+    func didTimedout()
+    func didError(error: Error)
+    func didThrowbackAuthorizeToVersionOne(authorizeURI: String, expectedReturnURLPatterns: [URLComponents])
+}
 
 @available(*, deprecated, renamed: "AuthorizingPaymentViewController")
 public typealias Omise3DSViewController = AuthorizingPaymentViewController
@@ -215,26 +215,53 @@ extension AuthorizingPaymentViewController: WKNavigationDelegate {
 
 // MARK: For testing with new 3DS-V2
 extension AuthorizingPaymentViewController {
-    public static func makeAuthorizingPayment(_ currentViewController: UIViewController,
-                                              authorizedURL: URL,
-                                              expectedReturnURLPatterns: [URLComponents],
-                                              delegate: AuthorizingPaymentViewControllerDelegate) {
-
-        let storyboard = UIStoryboard(name: "OmiseSDK", bundle: Bundle(for: AuthorizingPaymentViewController.self))
-        let authViewController = storyboard.instantiateViewController(withIdentifier: "DefaultAuthorizingPaymentViewController") as! AuthorizingPaymentViewController
-        authViewController.authorizedURL = authorizedURL
-        authViewController.expectedReturnURLPatterns = expectedReturnURLPatterns
-        authViewController.delegate = delegate
+    public struct OmiseChallengeStatusReceiver: ThreeDSChallengeStatusReceiver {
+        let authorizingPaymentDelegate: AuthorizingPaymentDelegate
+        init(authorizingPaymentDelegate: AuthorizingPaymentDelegate) {
+            self.authorizingPaymentDelegate = authorizingPaymentDelegate
+        }
         
-        ThreeDSService.doAuthorizePayment(authorizedURL, handlePaymentVerionOne: {
-            currentViewController.present(authViewController, animated: true, completion: nil)
-        }, success: {
-            delegate.authorizingPaymentViewControllerDidCompleted(authViewController)
-        }, failure: { error in
-            delegate.authorizingPaymentViewControllerDidError(authViewController, error: error)
-        }, timedout: {
-            delegate.authorizingPaymentViewControllerDidTimedout(authViewController)
-        })
+        public func completed(_ completionEvent: ThreeDSCompletionEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : complete")
+            authorizingPaymentDelegate.didCompleted(transactionID: completionEvent.getSDKTransactionID(), transactionStatus: completionEvent.getTransactionStatus())
+        }
+        
+        public func cancelled() {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : cancelled")
+            authorizingPaymentDelegate.didCancelled()
+        }
+        
+        public func timedout() {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : timedout")
+            authorizingPaymentDelegate.didTimedout()
+        }
+        
+        public func protocolError(_ protocolErrorEvent: ThreeDSProtocolErrorEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : protocolError")
+            dump(protocolErrorEvent)
+            authorizingPaymentDelegate.didError(error: OmiseError.unexpected(error: OmiseError.UnexpectedError.other(protocolErrorEvent.getErrorMessage().getErrorDescription()), underlying: nil))
+        }
+        
+        public func runtimeError(_ runtimeErrorEvent: ThreeDSRuntimeErrorEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : runtimeError")
+            dump(runtimeErrorEvent)
+            authorizingPaymentDelegate.didError(error: OmiseError.unexpected(error: OmiseError.UnexpectedError.other(runtimeErrorEvent.getErrorMessage()), underlying: nil))
+        }
+        
+        public func throwbackToAuthorizeVersionOne(_ authorizeURI: String, _ expectedReturnURLPatterns: [URLComponents]) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : throwbackToAuthorizeVersionOne \(authorizeURI)")
+            authorizingPaymentDelegate.didThrowbackAuthorizeToVersionOne(authorizeURI: authorizeURI, expectedReturnURLPatterns: expectedReturnURLPatterns)
+        }
+    }
+    
+    public static func makeAuthorizingPayment(_ currentViewController: UIViewController,
+                                              omiseTokenID: String,
+                                              authorizeURL: URL,
+                                              expectedReturnURLPatterns: [URLComponents],
+                                              delegate: AuthorizingPaymentDelegate) {
+        print("OmiseSDK call 3DS-SDK to makeAuthorizingPayment")
+        let challengeStatusReceiver = OmiseChallengeStatusReceiver(authorizingPaymentDelegate: delegate)
+        ThreeDSService.doAuthorizePayment(challengeStatusReceiver: challengeStatusReceiver, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
     }
 }
 
