@@ -205,6 +205,70 @@ import os
         }
         dataTask.resume()
     }
+
+    public func observeChargeStatus(from tokenID: String,
+                                    updated: @escaping (ChargeStatus) -> Void,
+                                    failure: @escaping (Error) -> Void) {
+        enum ObservingStatus {
+            case starting
+            case checking
+            case checked
+        }
+
+        var repeatCounter = 10
+        var currentChargeStatus: ChargeStatus?
+        var observingStatus = ObservingStatus.starting
+
+        if #available(iOSApplicationExtension 10.0, *) {
+            Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
+                print("observeChargeStatus : \(repeatCounter)")
+                repeatCounter = repeatCounter - 1
+
+                switch observingStatus {
+                case .starting:
+                    print("Starting : Starting for ChargeStatus")
+                    observingStatus = .checking
+
+                    self.retrieveChargeStatusWithCompletionHandler(from: tokenID, completionHandler: { (chargeStatus, error) in
+
+                        if let error = error {
+                            timer.invalidate()
+                            failure(error)
+                        }
+
+                        if repeatCounter == 0 {
+                            timer.invalidate()
+                            updated(chargeStatus)
+                        }
+
+                        if currentChargeStatus == nil {
+                            currentChargeStatus = chargeStatus
+                        }
+
+                        if (currentChargeStatus != chargeStatus) {
+                            timer.invalidate()
+                            updated(chargeStatus)
+                        } else {
+                            observingStatus = .checked
+                        }
+                    })
+
+                case .checking:
+                    print("Checking : Waiting for new ChargeStatus")
+
+                case .checked:
+                    print("Checked : ChargeStatus is \(String(describing: currentChargeStatus))")
+
+                    // Loopback for check it again
+                    observingStatus = .starting
+                }
+            }
+        } else {
+            // FIXME: Handle for old iOS version before release
+            // Fallback on earlier versions
+            failure(OmiseError.api(code: .other(""), message: "", location: ""))
+        }
+    }
 }
 
 
