@@ -258,10 +258,27 @@ extension AuthorizingPaymentViewController {
                                               omiseTokenID: String,
                                               authorizeURL: URL,
                                               expectedReturnURLPatterns: [URLComponents],
-                                              delegate: AuthorizingPaymentDelegate) {
+                                              delegate: AuthorizingPaymentDelegate,
+                                              uiCustomization: UICustomization? = nil) {
         print("OmiseSDK call 3DS-SDK to makeAuthorizingPayment")
         let challengeStatusReceiver = OmiseChallengeStatusReceiver(authorizingPaymentDelegate: delegate)
-        ThreeDSService.doAuthorizePayment(challengeStatusReceiver: challengeStatusReceiver, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
+        let navigationBarCustomization = NavigationBarCustomization(textFont: UIFont.italicSystemFont(ofSize: 22), textColor: .blue, backgroundColor: .brown, headerText: "xSecurex", buttonText: "Bacxx")
+        let submitButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .blue, backgroundColor: .magenta, cornerRadius: 10)
+        let resendButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .green, backgroundColor: .black, cornerRadius: 12)
+        let continueButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .orange, backgroundColor: .blue, cornerRadius: 14)
+        let labelCustomization = LabelCustomization(textFont: UIFont.italicSystemFont(ofSize: 14), textColor: .orange, headerTextFont: UIFont.boldSystemFont(ofSize: 18), headerTextColor: .magenta)
+        let textBoxCustomization = TextFieldCustomization(textFont: UIFont.boldSystemFont(ofSize: 10), textColor: .cyan, borderWidth: 4, borderColor: .red, cornerRadius: 0)
+
+        var uiCustomization = UICustomization(toolbarCustomization: navigationBarCustomization,
+                                              labelCustomization: labelCustomization,
+                                              textBoxCustomization: textBoxCustomization)
+
+        uiCustomization.setButtonCustomization(submitButtonCustomization, for: .submit)
+        uiCustomization.setButtonCustomization(resendButtonCustomization, for: .resend)
+        uiCustomization.setButtonCustomization(continueButtonCustomization, for: .continue)
+
+        let threeDSService = ThreeDSService(locale: nil, uiCustomization: uiCustomization)
+        threeDSService.doAuthorizePayment(challengeStatusReceiver: challengeStatusReceiver, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
     }
 }
 
