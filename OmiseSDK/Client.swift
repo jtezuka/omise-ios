@@ -188,8 +188,7 @@ import os
                     result = (.unknown, error)
                     return
                 }
-                print("retrieveTokenWithCompletionHandler : success")
-                print(String(decoding: data, as: UTF8.self))
+
                 do {
                     let token = try decoder.decode(Token.self, from: data)
                     result = (token.chargeStatus, nil)
@@ -221,12 +220,19 @@ import os
 
         if #available(iOSApplicationExtension 10.0, *) {
             Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
-                print("observeChargeStatus : \(repeatCounter)")
+                print("Esimo - ObserveChargeStatus count : \(repeatCounter)")
+
+                if repeatCounter == 0 {
+                  timer.invalidate()
+                  updated(currentChargeStatus ?? .unknown)
+                  return
+                }
+
                 repeatCounter = repeatCounter - 1
 
                 switch observingStatus {
                 case .starting:
-                    print("Starting : Starting for ChargeStatus")
+                    print("Starting : Starting for observing ChargeStatus")
                     observingStatus = .checking
 
                     self.retrieveChargeStatusWithCompletionHandler(from: tokenID, completionHandler: { (chargeStatus, error) in
@@ -234,11 +240,6 @@ import os
                         if let error = error {
                             timer.invalidate()
                             failure(error)
-                        }
-
-                        if repeatCounter == 0 {
-                            timer.invalidate()
-                            updated(chargeStatus)
                         }
 
                         if currentChargeStatus == nil {
@@ -257,7 +258,7 @@ import os
                     print("Checking : Waiting for new ChargeStatus")
 
                 case .checked:
-                    print("Checked : ChargeStatus is \(String(describing: currentChargeStatus))")
+                    print("Checked : Current ChargeStatus is \(String(describing: currentChargeStatus))")
 
                     // Loopback for check it again
                     observingStatus = .starting
