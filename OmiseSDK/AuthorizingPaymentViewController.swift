@@ -1,6 +1,7 @@
 import Foundation
 import WebKit
 import os
+import ThreeDSSDK
 
 
 /// Delegate to receive authorizing payment events.
@@ -11,6 +12,15 @@ public protocol AuthorizingPaymentViewControllerDelegate: AnyObject {
     func authorizingPaymentViewController(_ viewController: AuthorizingPaymentViewController, didCompleteAuthorizingPaymentWithRedirectedURL redirectedURL: URL)
     /// A delegation method called when user cancel the authorizing payment process.
     func authorizingPaymentViewControllerDidCancel(_ viewController: AuthorizingPaymentViewController)
+}
+
+/// Delegate to receive new version of authorizing payment events.
+public protocol AuthorizingPaymentDelegate: AnyObject {
+    func didCompleted(transactionID: String, transactionStatus: String)
+    func didCancelled()
+    func didTimedout()
+    func didError(error: Error)
+    func didThrowbackAuthorizeToVersionOne(authorizeURI: String, expectedReturnURLPatterns: [URLComponents])
 }
 
 
