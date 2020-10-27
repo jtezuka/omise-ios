@@ -69,6 +69,8 @@
 		986406321CFEA7E4004BCF51 /* CardNumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9864062C1CFEA7E4004BCF51 /* CardNumberTextField.swift */; };
 		986406341CFEA7E4004BCF51 /* CardNameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9864062E1CFEA7E4004BCF51 /* CardNameTextField.swift */; };
 		986406351CFEA7E4004BCF51 /* OmiseTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9864062F1CFEA7E4004BCF51 /* OmiseTextField.swift */; };
+		986BB0742548119600762DBB /* ThreeDSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BB0732548119600762DBB /* ThreeDSSDK.framework */; };
+		986BB0752548119600762DBB /* ThreeDSSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 986BB0732548119600762DBB /* ThreeDSSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		987A02CE1CE35D5E0035417A /* OmiseSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225931181CE3210700841B86 /* OmiseSDK.framework */; };
 		987A03AD1CE5CD450035417A /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = 987A03AC1CE5CD450035417A /* Fixtures */; };
 		F6614CD6243DB8E7005B656E /* TrueMoneyFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6614CD5243DB8E7005B656E /* TrueMoneyFormViewController.swift */; };
@@ -99,6 +101,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				8A2C451920ECC7A60033E2EB /* OmiseSDK.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		986BB0762548119600762DBB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				986BB0752548119600762DBB /* ThreeDSSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -182,6 +195,7 @@
 		9864062C1CFEA7E4004BCF51 /* CardNumberTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardNumberTextField.swift; sourceTree = "<group>"; };
 		9864062E1CFEA7E4004BCF51 /* CardNameTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardNameTextField.swift; sourceTree = "<group>"; };
 		9864062F1CFEA7E4004BCF51 /* OmiseTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OmiseTextField.swift; sourceTree = "<group>"; };
+		986BB0732548119600762DBB /* ThreeDSSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ThreeDSSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		987A02C91CE35D5E0035417A /* OmiseSDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OmiseSDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		987A02CD1CE35D5E0035417A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		987A03AC1CE5CD450035417A /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fixtures; sourceTree = "<group>"; };
@@ -193,6 +207,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				986BB0742548119600762DBB /* ThreeDSSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,6 +237,7 @@
 				987A02CA1CE35D5E0035417A /* OmiseSDKTests */,
 				22D4809E1D0EB29C00544CE1 /* ExampleApp */,
 				225931191CE3210700841B86 /* Products */,
+				986BB0722548119600762DBB /* Frameworks */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -373,6 +389,14 @@
 			name = Fields;
 			sourceTree = "<group>";
 		};
+		986BB0722548119600762DBB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				986BB0732548119600762DBB /* ThreeDSSDK.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		987A02CA1CE35D5E0035417A /* OmiseSDKTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,6 +444,7 @@
 				225931141CE3210700841B86 /* Frameworks */,
 				225931151CE3210700841B86 /* Headers */,
 				225931161CE3210700841B86 /* Resources */,
+				986BB0762548119600762DBB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
