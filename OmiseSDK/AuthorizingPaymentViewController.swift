@@ -159,3 +159,73 @@ extension AuthorizingPaymentViewController: WKNavigationDelegate {
     }
 }
 
+
+// MARK: For testing with new 3DS-V2
+extension AuthorizingPaymentViewController {
+    public struct OmiseChallengeStatusReceiver: ThreeDSChallengeStatusReceiver {
+        let authorizingPaymentDelegate: AuthorizingPaymentDelegate
+        init(authorizingPaymentDelegate: AuthorizingPaymentDelegate) {
+            self.authorizingPaymentDelegate = authorizingPaymentDelegate
+        }
+        
+        public func completed(_ completionEvent: ThreeDSCompletionEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : complete")
+            authorizingPaymentDelegate.didCompleted(transactionID: completionEvent.getSDKTransactionID(), transactionStatus: completionEvent.getTransactionStatus())
+        }
+        
+        public func cancelled() {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : cancelled")
+            authorizingPaymentDelegate.didCancelled()
+        }
+        
+        public func timedout() {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : timedout")
+            authorizingPaymentDelegate.didTimedout()
+        }
+        
+        public func protocolError(_ protocolErrorEvent: ThreeDSProtocolErrorEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : protocolError")
+            dump(protocolErrorEvent)
+            authorizingPaymentDelegate.didError(error: OmiseError.unexpected(error: OmiseError.UnexpectedError.other(protocolErrorEvent.getErrorMessage().getErrorDescription()), underlying: nil))
+        }
+        
+        public func runtimeError(_ runtimeErrorEvent: ThreeDSRuntimeErrorEvent) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : runtimeError")
+            dump(runtimeErrorEvent)
+            authorizingPaymentDelegate.didError(error: OmiseError.unexpected(error: OmiseError.UnexpectedError.other(runtimeErrorEvent.getErrorMessage()), underlying: nil))
+        }
+        
+        public func throwbackToAuthorizeVersionOne(_ authorizeURI: String, _ expectedReturnURLPatterns: [URLComponents]) {
+            print("OmiseSDK - OmiseChallengeStatusReceiver : throwbackToAuthorizeVersionOne \(authorizeURI)")
+            authorizingPaymentDelegate.didThrowbackAuthorizeToVersionOne(authorizeURI: authorizeURI, expectedReturnURLPatterns: expectedReturnURLPatterns)
+        }
+    }
+    
+    public static func makeAuthorizingPayment(_ currentViewController: UIViewController,
+                                              omiseTokenID: String,
+                                              authorizeURL: URL,
+                                              expectedReturnURLPatterns: [URLComponents],
+                                              delegate: AuthorizingPaymentDelegate,
+                                              uiCustomization: UICustomization? = nil) {
+        print("OmiseSDK call 3DS-SDK to makeAuthorizingPayment on \(authorizeURL.absoluteString)")
+        let challengeStatusReceiver = OmiseChallengeStatusReceiver(authorizingPaymentDelegate: delegate)
+        let navigationBarCustomization = NavigationBarCustomization(textFont: UIFont.italicSystemFont(ofSize: 22), textColor: .blue, backgroundColor: .brown, headerText: "xSecurex", buttonText: "Bacxx")
+        let submitButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .blue, backgroundColor: .magenta, cornerRadius: 10)
+        let resendButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .green, backgroundColor: .black, cornerRadius: 12)
+        let continueButtonCustomization = ButtonCustomization(textFont: UIFont.italicSystemFont(ofSize: 12), textColor: .orange, backgroundColor: .blue, cornerRadius: 14)
+        let labelCustomization = LabelCustomization(textFont: UIFont.italicSystemFont(ofSize: 14), textColor: .orange, headerTextFont: UIFont.boldSystemFont(ofSize: 18), headerTextColor: .magenta)
+        let textBoxCustomization = TextFieldCustomization(textFont: UIFont.boldSystemFont(ofSize: 10), textColor: .cyan, borderWidth: 4, borderColor: .red, cornerRadius: 0)
+
+        var uiCustomization = UICustomization(toolbarCustomization: navigationBarCustomization,
+                                              labelCustomization: labelCustomization,
+                                              textBoxCustomization: textBoxCustomization)
+
+        uiCustomization.setButtonCustomization(submitButtonCustomization, for: .submit)
+        uiCustomization.setButtonCustomization(resendButtonCustomization, for: .resend)
+        uiCustomization.setButtonCustomization(continueButtonCustomization, for: .continue)
+
+        let threeDSService = ThreeDSService(locale: nil, uiCustomization: uiCustomization)
+        threeDSService.doAuthorizePayment(challengeStatusReceiver: challengeStatusReceiver, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
+    }
+}
+
