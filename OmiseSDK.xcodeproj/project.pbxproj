@@ -99,6 +99,7 @@
 		987A03211CE5B7D70035417A /* OmiseTokenRequestTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 987A03201CE5B7D70035417A /* OmiseTokenRequestTest.swift */; };
 		987A03AD1CE5CD450035417A /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = 987A03AC1CE5CD450035417A /* Fixtures */; };
 		F3497368254C067000D05C7B /* MobileBankingSourceChooserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3497367254C066F00D05C7B /* MobileBankingSourceChooserViewController.swift */; };
+		F3BFA52D2559480D00CF6F41 /* AuthorizingPaymentThreeDSecureProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BFA52C2559480D00CF6F41 /* AuthorizingPaymentThreeDSecureProtocol.swift */; };
 		F6614CD6243DB8E7005B656E /* TrueMoneyFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6614CD5243DB8E7005B656E /* TrueMoneyFormViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -255,6 +256,7 @@
 		987A03201CE5B7D70035417A /* OmiseTokenRequestTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OmiseTokenRequestTest.swift; sourceTree = "<group>"; };
 		987A03AC1CE5CD450035417A /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fixtures; sourceTree = "<group>"; };
 		F3497367254C066F00D05C7B /* MobileBankingSourceChooserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileBankingSourceChooserViewController.swift; sourceTree = "<group>"; };
+		F3BFA52C2559480D00CF6F41 /* AuthorizingPaymentThreeDSecureProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizingPaymentThreeDSecureProtocol.swift; sourceTree = "<group>"; };
 		F6614CD5243DB8E7005B656E /* TrueMoneyFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrueMoneyFormViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -329,6 +331,7 @@
 				8A2BE95720A9A8F1000CEB60 /* Models */,
 				8A2BE95820A9A8FE000CEB60 /* Views */,
 				8AD0609120B550B90074894E /* Compatibility */,
+				F3BFA52B2559469B00CF6F41 /* ThreeDSecureAuthorization */,
 				2225B3531D0FDD63003EB396 /* Assets.xcassets */,
 				8AF985752147CC3D007E18ED /* Error.strings */,
 				8A75676B2178963B00C684C9 /* Localizable.strings */,
@@ -529,6 +532,14 @@
 				8A01F78620D8E0EB003FC11E /* Objective-C */,
 			);
 			path = OmiseSDKTests;
+			sourceTree = "<group>";
+		};
+		F3BFA52B2559469B00CF6F41 /* ThreeDSecureAuthorization */ = {
+			isa = PBXGroup;
+			children = (
+				F3BFA52C2559480D00CF6F41 /* AuthorizingPaymentThreeDSecureProtocol.swift */,
+			);
+			path = ThreeDSecureAuthorization;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -737,6 +748,7 @@
 				8AD391B1230C05BC00383286 /* Colors.swift in Sources */,
 				8A47173D20AAB11B0022733A /* Source.swift in Sources */,
 				986406351CFEA7E4004BCF51 /* OmiseTextField.swift in Sources */,
+				F3BFA52D2559480D00CF6F41 /* AuthorizingPaymentThreeDSecureProtocol.swift in Sources */,
 				2220F1AD1D0FEE85008CD89F /* OmiseToken.swift in Sources */,
 				F3497368254C067000D05C7B /* MobileBankingSourceChooserViewController.swift in Sources */,
 				8AF9857221479F72007E18ED /* CreditCardFormViewController.swift in Sources */,
