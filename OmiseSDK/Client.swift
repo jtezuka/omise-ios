@@ -204,6 +204,67 @@ import os
         }
         dataTask.resume()
     }
+
+    public func observeChargeStatus(from tokenID: String,
+                                    updated: @escaping (ChargeStatus) -> Void,
+                                    failure: @escaping (Error) -> Void) {
+        enum ObservingStatus {
+            case starting
+            case checking
+            case checked
+        }
+
+        var repeatCounter = 10
+        var currentChargeStatus: ChargeStatus?
+        var observingStatus = ObservingStatus.starting
+
+        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
+            if repeatCounter == 0 {
+              timer.invalidate()
+              updated(currentChargeStatus ?? .unknown)
+              return
+            }
+
+            repeatCounter = repeatCounter - 1
+
+            switch observingStatus {
+            case .starting:
+                observingStatus = .checking
+                self.retrieveChargeStatusWithCompletionHandler(from: tokenID, completionHandler: { (latestChargeStatus, error) in
+                    if let error = error {
+                        timer.invalidate()
+                        failure(error)
+                    }
+
+                    switch latestChargeStatus {
+                    case .successful, .failed, .expired:
+                        timer.invalidate()
+                        updated(latestChargeStatus)
+
+                    default:
+                        if currentChargeStatus == nil {
+                            currentChargeStatus = latestChargeStatus
+                        }
+
+                        if (currentChargeStatus != latestChargeStatus) {
+                            timer.invalidate()
+                            updated(latestChargeStatus)
+                        } else {
+                            observingStatus = .checked
+                        }
+                    }
+                })
+
+            case .checking:
+                // Checking state. Do nothing, just chill and wait
+                break
+
+            case .checked:
+                // Loopback for check it again
+                observingStatus = .starting
+            }
+        }
+    }
 }
 
 
