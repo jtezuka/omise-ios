@@ -69,9 +69,9 @@ public class AuthorizingPayment: NSObject {
     /// - parameter locale: A locale representing the user's region settings
     /// - parameter uiCustomization: UI component for customize authorization UI
     ///
-    public static func makeAuthorizingPaymentWithAuthorizedURL(_ authorizeURL: URL, expectedReturnURLPatterns: [URLComponents], delegate: AuthorizingPaymentThreeDSecureDelegate, locale: Locale? = nil, uiCustomization: UICustomization? = nil) {
+    public static func makeAuthorizingPaymentWithAuthorizedURL(_ authorizeURL: URL, expectedReturnURLPatterns: [URLComponents], delegate: AuthorizingPaymentThreeDSecureDelegate, locale: Locale? = nil, uiCustomization: AuthorizingPaymentUICustomization? = nil) {
         let challengeStatusReceiver = OmiseChallengeStatusReceiver(delegate: delegate)
-        let threeDSService = ThreeDSService(locale: locale, uiCustomization: uiCustomization)
+        let threeDSService = ThreeDSService(locale: locale, uiCustomization: uiCustomization?.customization)
         threeDSService.doAuthorizePayment(challengeStatusReceiver: challengeStatusReceiver, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
     }
 }
