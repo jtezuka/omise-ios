@@ -14,13 +14,18 @@ The 3DS-SDK is available in Omise iOS SDK
 ##### Create an `3D-Secure service version 2 for authorization` by code
 You can create an instance of `ThreeDSService` and set it with `authorized URL` given with the Omise Charge and `expected return URL` patterns those were created by merchants in the case. If your authorization cannot use 3D-Secure version 2, the SDK will throwback to the `throwbackToAuthorizeVersionOne` delegate method.
 ```swift
+In ViewController
+
+import OmiseSDK
+import OmiseThreeDSSDK
+
 let authorizeURL = URL(string: "http://localhost:8080/payments/123456789/authorize")!
 let expectedReturnURLPatterns = [URLComponents(string: "http://localhost:8080/charge/order")!]
-let threeDSService = ThreeDSService()
-threeDSService.doAuthorizePayment(challengeStatusReceiver: self, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
+let omiseThreeDSService = OmiseThreeDSService()
+omiseThreeDSService.doAuthorizePayment(challengeStatusReceiver: self, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
 ```
 
-#### Receive `3D-Secure version 2 Authorizing Payment` events via the delegate
+#### Receive `3D-Secure version 2 Authorizing Payment` events via the delegate for handle result of Authorization
 ```swift
 extension ViewController: ThreeDSChallengeStatusReceiver {
   func completed(_ completionEvent: ThreeDSCompletionEvent) {
@@ -138,7 +143,29 @@ Then you can put UICustomize instance when initial `ThreeDSService`
 let threeDSService = ThreeDSService(uiCustomization: uiCustomization)
 ```
 
-#### Authorization Timeout
+#### Custom Authorization Timeout
+Timeout interval (in minutes) within which the challenge process must be completed. The minimum timeout interval shall be 5 minutes in default.
+```swift
+// Use default timeout
+let threeDSService = ThreeDSService()
 
-## How to handle result of Authorization
+// Use custom timeout. Ex. 2 minutes
+let threeDSService = ThreeDSService(timeout: 2)
+```
+
 ## How to check status of Omise Charge by Omise Token ID
+We also prepare methods for checking `Charge` status by `OmiseTokenID`
+```swift
+import OmiseSDK
+
+let client = OmiseSDK.Client.init(publicKey: "omise_public_key")
+client.retrieveChargeStatusWithCompletionHandler(from tokenID: omiseTokenID, completionHandler: (((ChargeStatus, Error?)) -> Void)?) {
+// Handle ChargeStatus or Error here
+}
+
+// Or use this method for polling (pull Charge status every 3 second until exceed the limit(10 times) or Charge status changed to Success or Failed)
+client.observeChargeStatus(from tokenID: String,
+                                updated: @escaping (ChargeStatus) -> Void,
+                                failure: @escaping (Error) -> Void)
+
+```
