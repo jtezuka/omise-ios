@@ -27,8 +27,8 @@ import OmiseThreeDSSDK
 
 let authorizeURL = URL(string: "http://localhost:8080/payments/123456789/authorize")!
 let expectedReturnURLPatterns = [URLComponents(string: "http://localhost:8080/charge/order")!]
-let omiseThreeDSService = OmiseThreeDSService()
-omiseThreeDSService.doAuthorizePayment(challengeStatusReceiver: self, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
+let threeDSService = ThreeDSService()
+threeDSService.doAuthorizePayment(challengeStatusReceiver: self, authorizeURL: authorizeURL, expectedReturnURLPatterns: expectedReturnURLPatterns)
 ```
 
 #### Receive `3D-Secure version 2 Authorizing Payment` events via the delegate for handle result of Authorization
