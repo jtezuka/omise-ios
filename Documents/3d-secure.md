@@ -6,8 +6,14 @@
 ## 3DS Version 1
 ## 3DS Version 2
 
+## Requirements
+* Omise API public key. [Register for an Omise account](https://dashboard.omise.co/signup) to obtain your API keys.
+* iOS 11 or higher deployment target.
+* Xcode 10.0 or higher (Xcode 12.2 is recommended)
+* Swift 5.0 or higher (Swift 5.3.1 is recommended)
+
 ## Installation
-The 3DS-SDK is available in Omise iOS SDK
+The 3DS-SDK is available in Omise iOS SDK or download directly from [OmiseThreeDSSDK]()
 
 ## Usage
 ### Authorizing Payment
