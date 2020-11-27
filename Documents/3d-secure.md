@@ -1,10 +1,7 @@
 # DRAFT
-# 3D-Secure SDK
+# 3D Secure 2
 
-## What is 3DS (3D-Secure)
-
-## 3DS Version 1
-## 3DS Version 2
+The previous version of 3D Secure (3DS) redirected the cardholder to the bank's website, 3D Secure 2 (3DS2) now provides strong customer authentication allowing the customer to authenticate directly within the merchant application.
 
 ## Requirements
 * Omise API public key. [Register for an Omise account](https://dashboard.omise.co/signup) to obtain your API keys.
