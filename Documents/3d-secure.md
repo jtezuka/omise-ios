@@ -13,7 +13,7 @@
 * Swift 5.0 or higher (Swift 5.3.1 is recommended)
 
 ## Installation
-The 3DS-SDK is available in Omise iOS SDK or download directly from [OmiseThreeDSSDK]()
+The 3DS-SDK is available in Omise iOS SDK or download directly from [OmiseThreeDSSDK](https://github.com/omise/omise-ios/blob/3ds-v2-document/OmiseThreeDSSDK/OmiseThreeDSSDK.xcframework.zip)
 
 ## Usage
 ### Authorizing Payment
